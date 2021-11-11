@@ -21,6 +21,7 @@ async function run() {
         const database = client.db("weddingService");
         const servicesCollection = database.collection("services");
         const myOrderCollection = database.collection("order");
+        const usersCollection = database.collection("users");
 
         //Post Api
         app.post('/services', async (req, res) => {
@@ -57,6 +58,21 @@ async function run() {
                 _id: ObjectId(req.params.id),
             });
             res.send(result);
+        });
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
+            res.json(result)
+        });
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
         })
     }
     finally {
