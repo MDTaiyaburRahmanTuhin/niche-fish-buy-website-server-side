@@ -33,7 +33,7 @@ async function run() {
         //GET API
         app.get('/services', async (req, res) => {
             const cursor = servicesCollection.find({});
-            const services = await cursor.toArray();
+            const services = await cursor.limit(6).toArray();
             res.send(services);
         })
         //Get orderProdect
@@ -46,6 +46,7 @@ async function run() {
         app.post('/myOrder', async (req, res) => {
             const result = await myOrderCollection.insertOne(req.body);
             res.send(result);
+            console.log(req.body);
         })
         //get myOrders
         app.get('/myOrders/:email', async (req, res) => {
@@ -54,10 +55,16 @@ async function run() {
         });
         //deleteOrder
         app.delete('/deleteOrder/:id', async (req, res) => {
-            const result = await myOrderCollection.deleteOne({
-                _id: ObjectId(req.params.id),
+            /* const result = await myOrderCollection.deleteOne({
+                _id: ObjectId(req.params.id)
+
             });
-            res.send(result);
+            res.send(result); */
+            const id = req.params.id;
+            const query = { _id: (id) }
+            const result = await myOrderCollection.deleteOne(query)
+            res.json(result)
+
         });
 
         app.get('/users/:email', async (req, res) => {
@@ -92,6 +99,25 @@ async function run() {
             const updateDoc = { $set: { role: 'admin' } };
             const result = await usersCollection.updateOne(filter, updateDoc);
             res.json(result);
+        })
+        app.get('/allOrders', async (req, res) => {
+            const cursor = myOrderCollection.find({});
+            const services = await cursor.toArray();
+            res.send(services);
+        })
+
+        //updateStatus
+        app.put('/updateStatus/:id', (req, res) => {
+            const id = req.params.id;
+            const updateStatus = req.body.status;
+            const filter = { _id: (id) };
+            console.log(updateStatus);
+            myOrderCollection.updateOne(filter, {
+                $set: { status: updateStatus }
+            })
+                .then(result => {
+                    res.json(result);
+                })
         })
     }
     finally {
