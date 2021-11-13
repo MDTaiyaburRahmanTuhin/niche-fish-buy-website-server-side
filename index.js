@@ -34,7 +34,7 @@ async function run() {
         //GET API
         app.get('/services', async (req, res) => {
             const cursor = servicesCollection.find({});
-            const services = await cursor.limit(6).toArray();
+            const services = await cursor.toArray();
             res.send(services);
         })
         //Get orderProdect
