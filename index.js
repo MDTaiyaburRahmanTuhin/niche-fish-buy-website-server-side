@@ -22,6 +22,7 @@ async function run() {
         const servicesCollection = database.collection("services");
         const myOrderCollection = database.collection("order");
         const usersCollection = database.collection("users");
+        const reviewCollection = database.collection("review");
 
         //Post Api
         app.post('/services', async (req, res) => {
@@ -55,15 +56,15 @@ async function run() {
         });
         //deleteOrder
         app.delete('/deleteOrder/:id', async (req, res) => {
-            /* const result = await myOrderCollection.deleteOne({
+            const result = await myOrderCollection.deleteOne({
                 _id: ObjectId(req.params.id)
 
             });
-            res.send(result); */
-            const id = req.params.id;
+            res.send(result);
+            /* const id = req.params.id;
             const query = { _id: (id) }
             const result = await myOrderCollection.deleteOne(query)
-            res.json(result)
+            res.json(result) */
 
         });
 
@@ -118,6 +119,22 @@ async function run() {
                 .then(result => {
                     res.json(result);
                 })
+        });
+
+        //Post review
+
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            console.log('hit the post api', review);
+            const result = await reviewCollection.insertOne(review);
+            res.json(result)
+        });
+
+        // Get review
+        app.get('/review', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const review = await cursor.toArray();
+            res.send(review);
         })
     }
     finally {
